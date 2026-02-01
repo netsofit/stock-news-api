@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-news-app
+  namespace: argocd
+  labels:
+    app: stock-news-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stock-news-app
+  template:
+    metadata:
+      labels:
+        app: stock-news-app
+    spec:
+      containers:
+        - name: app
+          image: stock-news-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8091
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-news-app
+  namespace: argocd
+spec:
+  selector:
+    app: stock-news-app
+  ports:
+    - protocol: TCP
+      port: 8091
+      targetPort: 8091
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: stock-news-ingress
+  namespace: argocd
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - news.netsofit.com
+      secretName: stock-news-tls
+  rules:
+    - host: news.netsofit.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: stock-news-app
+                port:
+                  number: 8091

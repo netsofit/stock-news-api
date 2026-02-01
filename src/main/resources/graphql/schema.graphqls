@@ -1,0 +1,9 @@
+type Query {
+    latestNews: [News]
+}
+
+type News {
+    id: ID
+    title: String
+    summary: String
+}
