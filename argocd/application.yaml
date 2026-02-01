@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/netsofit/adult-care-search.git # Assuming same repo for now, update if different
     targetRevision: HEAD
-    path: stock-news-api/k8s
+    path: k8s # Update if project is in a subdirectory (e.g. adult-care-search/k8s)
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
